@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 
 class LogisticRegression:
-    def __init__(self, learning_rate = 0.1, max_iter = 1000):
+    def __init__(self, learning_rate = 0.1, max_iter = 100):
         # Tasa de aprendizaje y número máximo de iteraciones para el gradient descent
         self.learning_rate = learning_rate
         self.max_iter = max_iter
@@ -100,12 +100,7 @@ predictions = model.predict(X_test)
 accuracy = model.accuracy(X_test, y_test)
 accuracy_percentage = accuracy * 100
 
-# Plot de progreso de entrenamiento reduciendo el error
-plt.plot(model.losses)
-plt.title("Progreso de entrenamiento reduciendo el error")
-plt.xlabel("Epoch")
-plt.ylabel("Loss")
-plt.show()
+print(f'\nAccuracy: {accuracy_percentage}%')
 
 """
 En caso de obtener accuracy: 100% -> Modelo predijo todas las labels del dataset de prueba.
@@ -116,4 +111,10 @@ Observaciones:
 - Al igual que los parametros de tasa de aprendizaje y número de iteraciones aplicado al Gradient Descent.
 """
 
-print(f'Accuracy: {accuracy_percentage}%')
+
+# Plot de progreso de entrenamiento reduciendo el error
+plt.plot(model.losses)
+plt.title("Progreso de entrenamiento reduciendo el error")
+plt.xlabel("Epoch")
+plt.ylabel("Loss")
+plt.show()
