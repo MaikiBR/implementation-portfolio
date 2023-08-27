@@ -8,11 +8,13 @@ Algoritmo: Logistic Regression
 """
 
 import numpy as np
-from sklearn.datasets import load_iris;
+import pandas as pd
+import matplotlib.pyplot as plt
+
 from sklearn.model_selection import train_test_split
 
 class LogisticRegression:
-    def __init__(self, learning_rate = 0.1, max_iter = 100):
+    def __init__(self, learning_rate = 0.1, max_iter = 1000):
         # Tasa de aprendizaje y número máximo de iteraciones para el gradient descent
         self.learning_rate = learning_rate
         self.max_iter = max_iter
@@ -29,13 +31,27 @@ class LogisticRegression:
         self.weights = np.zeros(n_features)
         self.bias = 0
 
+        # Variable para almacenar valor de pérdida en cada iteración
+        self.losses = []
+
         # Gradient descent para actualizar pesos y sesgo
-        for _ in range(self.max_iter):
+        for i in range(self.max_iter):
             # Modelo lineal
             linear_model = np.dot(X, self.weights) + self.bias
 
             # Función sigmoide para obtener probabilidades predichas
             y_predicted = self.sigmoid(linear_model)
+
+            # Cálculo de pérdida (cross-entropy loss)
+            loss = -(1 / n_samples) * np.sum(y * np.log(y_predicted) + (1 - y) * np.log(1 - y_predicted))
+            self.losses.append(loss)
+
+            # Reducción del error en cada iteración
+            print(f'Iteration {i + 1}: Loss = {loss:.6f}')
+
+            if loss <= 0:
+                print('Loss is less or equal 0')
+                break
 
             # Gradients para pesos y sesgo
             dw = (1 / n_samples) * np.dot(X.T, (y_predicted - y)) # Pesos
@@ -62,17 +78,34 @@ class LogisticRegression:
         accuracy = np.mean(y_pred == y)
         return accuracy
 
-iris = load_iris()
-X = iris.data
-y = (iris.target == 0).astype(int)
+# Lectura de dataset (proveniente de Kaggle)
+data = pd.read_csv('Iris.csv')
 
+# Visualización de datos
+X = data.iloc[:, :-1].values
+print('X size: {}'.format(X.shape))
+print('X ({}): \n{} ...'.format(type(X), X[0:5]))
+
+y = (data.iloc[:, -1] == 'setosa').astype(int)
+print('\ny size: {}'.format(y.shape))
+print('y ({}): \n{}'.format(type(y), y))
+
+# Separación de datos en datos de entrenamiento y datos de prueba
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42)
 
+# Aplicación de modelo en datos de entrenamiento y datos de prueba
 model = LogisticRegression()
 model.fit(X_train, y_train)
 predictions = model.predict(X_test)
 accuracy = model.accuracy(X_test, y_test)
 accuracy_percentage = accuracy * 100
+
+# Plot de progreso de entrenamiento reduciendo el error
+plt.plot(model.losses)
+plt.title("Progreso de entrenamiento reduciendo el error")
+plt.xlabel("Epoch")
+plt.ylabel("Loss")
+plt.show()
 
 """
 En caso de obtener accuracy: 100% -> Modelo predijo todas las labels del dataset de prueba.
